@@ -1,25 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDragAndDrop } from "@formkit/drag-and-drop/react";
 
 const KanbanBoard = () => {
-  const initialTodos = [
-    { id: "1", title: "Schedule perm" },
-    { id: "2", title: "Rewind VHS tapes" },
-    { id: "3", title: "Make change for the arcade" },
-    { id: "4", title: "Get disposable camera developed" },
-    { id: "5", title: "Learn C++" },
-    { id: "6", title: "Return Nintendo Power Glove" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const initialDones = [{ id: "7", title: "Pickup new mix-tape from Beth" }];
+  const [todoRef, todos] = useDragAndDrop([], { group: "kanban-tasks" });
+  const [doneRef, dones] = useDragAndDrop([], { group: "kanban-tasks" });
 
-  const [todoRef, todos] = useDragAndDrop(initialTodos, {
-    group: "kanban-tasks",
-  });
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('http://localhost/GestorAAA/gestoraaa/php/tareas.php');
+        
+        console.log('response.ok', response.ok);
+        console.log('response.status', response.status);
 
-  const [doneRef, dones] = useDragAndDrop(initialDones, {
-    group: "kanban-tasks",
-  });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('DATA FROM SERVER:', data);
+
+        if (data.status === "success" && Array.isArray(data.data)) {
+          const todoTasks = data.data.filter(task => task.id_estado === 1);
+          const doneTasks = data.data.filter(task => task.id_estado === 2);
+
+          todos.set(todoTasks.map(task => ({ id: task.id_tarea.toString(), title: task.nombre_tarea })));
+          dones.set(doneTasks.map(task => ({ id: task.id_tarea.toString(), title: task.nombre_tarea })));
+        } else {
+          throw new Error("Formato inesperado de respuesta del servidor");
+        }
+      } catch (err) {
+        console.error('ERROR EN FETCH:', err);
+        setError("Error al conectar o procesar datos del servidor");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [todos, dones]);
+
+  if (loading) return <div className="p-4 text-center">Cargando tareas...</div>;
+  if (error) return <div className="p-4 text-red-500 text-center">{error}</div>;
 
   return (
     <div className="p-4">
@@ -34,7 +59,7 @@ const KanbanBoard = () => {
           <tr>
             <td className="align-top border">
               <ul ref={todoRef} className="min-h-[200px] divide-y divide-gray-200">
-                {todos.map((task) => (
+                {todos.value.map((task) => (
                   <li
                     key={task.id}
                     className="p-2 hover:bg-blue-100 cursor-move transition"
@@ -46,7 +71,7 @@ const KanbanBoard = () => {
             </td>
             <td className="align-top border">
               <ul ref={doneRef} className="min-h-[200px] divide-y divide-gray-200">
-                {dones.map((task) => (
+                {dones.value.map((task) => (
                   <li
                     key={task.id}
                     className="p-2 hover:bg-green-100 cursor-move transition"
