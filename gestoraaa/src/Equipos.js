@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import 'C:/xampp/htdocs/GestorAAA/gestoraaa/src/Equipo.css';
 
 const Equipos = () => {
   const [equipos, setEquipos] = useState([]);
