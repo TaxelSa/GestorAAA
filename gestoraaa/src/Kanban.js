@@ -1,91 +1,110 @@
 import React, { useEffect, useState } from "react";
 import { useDragAndDrop } from "@formkit/drag-and-drop/react";
+import './Kanban.css';
 
 const KanbanBoard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [todoRef, todos] = useDragAndDrop([], { group: "kanban-tasks" });
-  const [doneRef, dones] = useDragAndDrop([], { group: "kanban-tasks" });
+  // Crear drag and drop states
+  const [todoRef, todos, setTodos] = useDragAndDrop([], { group: "kanban-tasks" });
+  const [inProgressRef, inProgress, setInProgress] = useDragAndDrop([], { group: "kanban-tasks" });
+  const [doneRef, dones, setDone] = useDragAndDrop([], { group: "kanban-tasks" });
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const response = await fetch('http://localhost/GestorAAA/gestoraaa/php/tareas.php');
-        
-        console.log('response.ok', response.ok);
-        console.log('response.status', response.status);
+        const json = await response.json();
+        console.log('Datos recibidos:', json);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (json.status !== "success") {
+          throw new Error("Error al traer las tareas");
         }
 
-        const data = await response.json();
-        console.log('DATA FROM SERVER:', data);
+        const tasks = json.data || [];
 
-        if (data.status === "success" && Array.isArray(data.data)) {
-          const todoTasks = data.data.filter(task => task.id_estado === 1);
-          const doneTasks = data.data.filter(task => task.id_estado === 2);
+        // Aquí asignamos usando directamente `set`
+        setTodos(tasks.filter(task => task.id_estado === 1));
+        setInProgress(tasks.filter(task => task.id_estado === 2));
+        setDone(tasks.filter(task => task.id_estado === 3));
 
-          todos.set(todoTasks.map(task => ({ id: task.id_tarea.toString(), title: task.nombre_tarea })));
-          dones.set(doneTasks.map(task => ({ id: task.id_tarea.toString(), title: task.nombre_tarea })));
-        } else {
-          throw new Error("Formato inesperado de respuesta del servidor");
-        }
       } catch (err) {
-        console.error('ERROR EN FETCH:', err);
-        setError("Error al conectar o procesar datos del servidor");
+        console.error('Error cargando tareas:', err);
+        setError('No se pudo cargar las tareas');
       } finally {
         setLoading(false);
       }
     };
 
     fetchTasks();
-  }, [todos, dones]);
+  }, [setTodos, setInProgress, setDone]);
 
-  if (loading) return <div className="p-4 text-center">Cargando tareas...</div>;
-  if (error) return <div className="p-4 text-red-500 text-center">{error}</div>;
+  if (loading) return <div className="text-center p-5">Cargando tareas...</div>;
+  if (error) return <div className="text-center p-5 text-red-500">{error}</div>;
 
   return (
-    <div className="p-4">
-      <table className="w-full border border-gray-300 table-fixed">
-        <thead>
-          <tr className="bg-gray-200 text-left">
-            <th className="w-1/2 p-2 border">To Do</th>
-            <th className="w-1/2 p-2 border">Done</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="align-top border">
-              <ul ref={todoRef} className="min-h-[200px] divide-y divide-gray-200">
-                {todos.value.map((task) => (
-                  <li
-                    key={task.id}
-                    className="p-2 hover:bg-blue-100 cursor-move transition"
-                  >
-                    {task.title}
-                  </li>
-                ))}
-              </ul>
-            </td>
-            <td className="align-top border">
-              <ul ref={doneRef} className="min-h-[200px] divide-y divide-gray-200">
-                {dones.value.map((task) => (
-                  <li
-                    key={task.id}
-                    className="p-2 hover:bg-green-100 cursor-move transition"
-                  >
-                    {task.title}
-                  </li>
-                ))}
-              </ul>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div className="kanban-board">
+    {/* To Do */}
+    <div className="kanban-column">
+      <h2 className="column-header">To Do</h2>
+      <ul ref={todoRef} className="task-list">
+        {todos.map(task => (
+          <li key={task.id_tarea} className="kanban-item">
+            <div className="task-header">{task.nombre_tarea}</div>
+            <div className="task-details">
+              <p>{task.descripcion}</p>
+              <div className="task-meta">
+                <span>{task.fecha_entrega}</span>
+                <span>Prioridad {task.prioridad}</span>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
-  );
-};
+
+   {/* In Progress */}
+   <div className="kanban-column">
+        <h2 className="column-header">In Progress</h2>
+        <ul ref={inProgressRef} className="task-list">
+          {inProgress.map(task => (
+            <li key={task.id_tarea} className="kanban-item">
+              <div className="task-header">{task.nombre_tarea}</div>
+              <div className="task-details">
+                <p>{task.descripcion}</p>
+                <div className="task-meta">
+                  <span>{task.fecha_entrega}</span>
+                  <span>Prioridad {task.prioridad}</span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Done */}
+      <div className="kanban-column">
+        <h2 className="column-header">Done</h2>
+        <ul ref={doneRef} className="task-list">
+          {dones.map(task => (
+            <li key={task.id_tarea} className="kanban-item">
+              <div className="task-header">{task.nombre_tarea}</div>
+              <div className="task-details">
+                <p>{task.descripcion}</p>
+                <div className="task-meta">
+                  <span>{task.fecha_entrega}</span>
+                  <span>Prioridad {task.prioridad}</span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  
+);
+}
+  
 
 export default KanbanBoard;
