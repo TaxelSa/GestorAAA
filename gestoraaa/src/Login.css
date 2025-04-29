@@ -1,0 +1,120 @@
+:root {
+    --bg-light: #f5f5f5;
+    --bg-dark: #121212;
+    --container-light: white;
+    --container-dark: #1e1e1e;
+    --text-light: #333;
+    --text-dark: #f5f5f5;
+    --border-light: #ddd;
+    --border-dark: #444;
+    --button-light: #EFB036;
+    --button-dark: #EFB036;
+    --button-hover-light: #e0a42e;
+    --button-hover-dark: #d89c24;
+    --error-color: red;
+  }
+  
+  body {
+    margin: 0;
+    font-family: sans-serif;
+  }
+  
+  .login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-light);
+    transition: background-color 0.3s;
+  }
+  
+  .container {
+    background: var(--container-light);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    color: var(--text-light);
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  label {
+    font-size: 0.9rem;
+    text-align: left;
+    margin-bottom: -10px;
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: white;
+    color: #000;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  button {
+    background: var(--button-light);
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background: var(--button-hover-light);
+  }
+  
+  .error {
+    color: var(--error-color);
+    font-size: 0.9rem;
+    margin-top: 10px;
+  }
+  
+  /* Modo oscuro */
+  .dark .login-wrapper {
+    background-color: var(--bg-dark);
+  }
+  
+  .dark .container {
+    background: var(--container-dark);
+    color: var(--text-dark);
+  }
+  
+  .dark input {
+    background-color: #2a2a2a;
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+  }
+  
+  .dark button {
+    background: var(--button-dark);
+  }
+  
+  .dark button:hover {
+    background: var(--button-hover-dark);
+  }
+  
