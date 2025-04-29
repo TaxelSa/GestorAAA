@@ -1,5 +1,5 @@
 import { useState, Suspense, lazy } from 'react';
-import './Tabs.css';
+
 
 // Definición de componentes lazy (fuera del componente)
 const CreaTarea = lazy(() => import('./CreaTarea'));
