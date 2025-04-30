@@ -1,32 +1,68 @@
 <?php
-// Conexión a la base de datos
-$host = 'localhost';
-$db = 'gp_base';
-$user = 'root';
-$pass = ''; // Cambia si tienes una contraseña
+header('Access-Control-Allow-Origin: http://localhost:5173'); // Cambia esto al origen de tu frontend
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json');
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
+// Manejar solicitudes OPTIONS (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
 }
 
-// Verificar si se recibió el id_tarea por GET
-if (isset($_GET['id_tarea'])) {
-    $id_tarea = $_GET['id_tarea'];
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405); // Método no permitido
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Método no permitido'
+    ]);
+    exit;
+}
 
-    // Preparar y ejecutar la consulta de eliminación
-    $sql = "DELETE FROM tareas WHERE id_tarea = :id_tarea";
+$host = 'localhost';
+$dbname = 'gp_base';
+$username = 'root';
+$password = '';
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!isset($data['id_tarea'])) {
+    http_response_code(400); // Solicitud incorrecta
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'El ID de la tarea es obligatorio'
+    ]);
+    exit;
+}
+
+$id_tarea = $data['id_tarea'];
+error_log("ID de tarea recibido: $id_tarea"); // Agrega este log para verificar el ID recibido
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sql = "DELETE FROM tarea WHERE id_tarea = :id_tarea";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id_tarea', $id_tarea, PDO::PARAM_INT);
 
     if ($stmt->execute()) {
-        echo "Tarea eliminada correctamente.";
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Tarea eliminada exitosamente'
+        ]);
     } else {
-        echo "Error al eliminar la tarea.";
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Error al eliminar la tarea'
+        ]);
     }
-} else {
-    echo "No se especificó ninguna tarea para eliminar.";
+
+} catch (PDOException $e) {
+    http_response_code(500); // Error interno del servidor
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Error al conectar con la base de datos: ' . $e->getMessage()
+    ]);
 }
 ?>

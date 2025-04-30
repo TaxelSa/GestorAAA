@@ -48,38 +48,67 @@ const Cronograma = () => {
 
   const eliminarTarea = async (id_tarea) => {
     try {
-      const res = await fetch("http://localhost/GestorAAA/gestoraaa/php/eliminart.php", {
+      const res = await fetch("http://localhost/GestorAAA/gestoraaa/php/eliminar_tarea.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_tarea }),
       });
+
+      // Verificar el estado de la respuesta
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const result = await res.json();
+      console.log('Respuesta del servidor:', result);
+
       if (result.status === "success") {
         setTareas((prev) => prev.filter((t) => t.id_tarea !== id_tarea));
+      } else {
+        throw new Error(result.message || 'Error desconocido al eliminar la tarea');
       }
     } catch (error) {
       console.error("Error al eliminar tarea:", error);
+      alert(`Error al eliminar la tarea: ${error.message}`);
     }
   };
 
   const modificarTarea = async () => {
     try {
+      // Validar que se han proporcionado todos los campos necesarios
+      if (!tareaSeleccionada.nombre_tarea || !tareaSeleccionada.fecha_entrega || !tareaSeleccionada.hora_entrega) {
+        alert('Por favor, complete todos los campos requeridos');
+        return;
+      }
+
+      // Formatear la fecha y hora para el backend
+      const tareaActualizada = {
+        ...tareaSeleccionada,
+        fecha_entrega: new Date(tareaSeleccionada.fecha_entrega).toISOString().split('T')[0],
+        hora_entrega: tareaSeleccionada.hora_entrega
+      };
+
       const res = await fetch("http://localhost/GestorAAA/gestoraaa/php/modificar_tarea.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tareaSeleccionada),
+        body: JSON.stringify(tareaActualizada),
       });
+
       const result = await res.json();
+      
       if (result.status === "success") {
         setTareas((prev) =>
           prev.map((t) =>
-            t.id_tarea === tareaSeleccionada.id_tarea ? tareaSeleccionada : t
+            t.id_tarea === tareaSeleccionada.id_tarea ? tareaActualizada : t
           )
         );
         setTareaSeleccionada(null);
+      } else {
+        alert(result.message || 'Error al modificar la tarea');
       }
     } catch (error) {
       console.error("Error al modificar tarea:", error);
+      alert('Error al modificar la tarea. Por favor, inténtelo de nuevo.');
     }
   };
 
