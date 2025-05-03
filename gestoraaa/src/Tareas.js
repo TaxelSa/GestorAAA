@@ -1,7 +1,6 @@
 import { useState, Suspense, lazy } from 'react';
 
 
-// Definición de componentes lazy (fuera del componente)
 const CreaTarea = lazy(() => import('./CreaTarea'));
 const Kanban = lazy(() => import('./Kanban'));
 const Cronograma = lazy(() => import('./Cronograma'));

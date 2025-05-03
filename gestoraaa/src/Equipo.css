@@ -1,98 +1,29 @@
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-  }
-  
-  .formulario, .teams-table {
-    background-color: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 30px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px #ddd;
-  }
-  
-  input {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 8px;
-    font-size: 16px;
-  }
-  
-  button {
-    background-color: #3498db;
-    border: none;
-    padding: 10px 15px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  button:hover {
-    background-color: #2980b9;
-  }
-  
-  .mensaje.success {
-    color: green;
-  }
-  
-  .mensaje.error {
-    color: red;
-  }
-  
-  .teams-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .teams-table th, .teams-table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .btn-eliminar {
-    background-color: #e74c3c;
-    margin-right: 5px;
-  }
-  
-  .btn-editar {
-    background-color: #2ecc71;
-  }
-  
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: rgba(0,0,0,0.5);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    box-shadow: 0px 0px 10px #00000080;
-  }
-  
-  .modal-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-  }
-  
-  .btn-guardar {
-    background-color: #2ecc71;
-  }
-  
-  .btn-cancelar {
-    background-color: #e74c3c;
-  }
-  
+.tabs-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Transiciones para el contenido */
+.fade {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+}

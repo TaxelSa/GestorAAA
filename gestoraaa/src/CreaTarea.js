@@ -51,7 +51,7 @@ export const CrearTarea = ({ onTareaCreada }) => {
           id_materia: 1,
           id_proyecto: 22,
         });
-        if (onTareaCreada) onTareaCreada(); // Llama al callback si está definido
+        if (onTareaCreada) onTareaCreada(); 
       } else {
         setMensaje(data.message || 'Error desconocido al crear la tarea.');
       }
